@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  totpSecrets  TOTPSecret[]
+
+  @@map("users")
+}
+
+model TOTPSecret {
+  id              String   @id @default(cuid())
+  userId          String   @map("user_id")
+  serviceName     String   @map("service_name")
+  encryptedSecret String   @map("encrypted_secret")
+  iv              String   
+  authTag         String   @map("auth_tag") // Authentication tag for encryption
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Indexes and constraints
+  @@unique([userId, serviceName])
+  @@index([userId])
+  @@map("totp_secrets")
+}
+
