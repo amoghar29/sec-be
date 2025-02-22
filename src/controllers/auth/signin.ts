@@ -74,7 +74,7 @@ export const signin = async (
     const cookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict" as const,
+      sameSite: "none" as const,
       expires: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000),
       path: "/",
     };
